@@ -1,0 +1,333 @@
+      
+        /************************************************************************   ROBOT ARDUINO PROJET S.I.N TERMINALE  ************************************************************************************************
+        
+        CODE BY PAUL KAELBLEN
+        
+     
+        ****/
+        
+        
+        /* 
+           DEBUT PROGRAMME  
+        */
+        
+        // INITIALISATION VARIABLES
+    
+      int vitesse1 = 5;        // Contrôle vitesse moteur 1
+      int vitesse2 = 6;        // Contrôle vitesse moteur 2
+      int sens1 = 4;//4;      // Contrôle direction moteur 1
+      int sens2 = 7;//7;      // Contrôle direction moteur 1
+      int  sensorValue = A1;   //CAPTEUR TEMPERATURE
+      int etat = 0;            //ETAT RECULER OU AVANCER
+         
+      
+     
+      int pos = 0;
+        // INITIALISATION BIBLIOTHEQUE
+        
+      #include <Servo.h> 
+      Servo servodirection;   
+         ///FONCTION SETUP() 
+   
+  void setup()
+    {
+        Serial1.begin(9600);
+        servodirection.attach(2);
+        servodirection.write(90);
+        int i;
+        for(i=4;i<=7;i++)
+        {
+        }
+        pinMode(i, OUTPUT);
+        pinMode(13, OUTPUT);
+        pinMode(12, OUTPUT);  
+        Serial1.println("bienvenue vous pouvez commander votre robot !");
+        Serial1.println("Execution du controle par clavier");
+    }
+    
+    // FONCTION PRINCIPALE 
+    
+void loop()
+{      
+  //ON TESTE LA PRESSENCE DE CARACTERE SUR LE PORT SERIE 
+  if(Serial1.available()> 0)
+  {   
+    
+    
+      int val = Serial1.read();
+     delay(10);
+      int val2 = Serial1.read();
+     delay(10);
+      int val3 = Serial1.read();
+     delay(10);
+     int val4 = Serial1.read();
+     delay(10);
+      int val5 = Serial1.read();
+     delay(10);
+        if(val != -1  )
+        { 
+            ///PETITE  VITESSE POUR RECULER
+            
+                 while(((val=='P' && val2=='V') && (etat == 3)) || ((val == 'p' && val2 == 'v') && (etat == 3) )|| ((val=='P' && val2=='v') && (etat == 3)) || ((val=='p' && val2=='V') && (etat == 3)))
+               {
+                   petitevitessearriere (100,100);
+                   Serial1.println("petite vitesse arriere");
+                   loop();
+               }
+               
+            ///GRANDE  VITESSE POUR RECULER
+            
+                while(((val=='G' && val2=='V') &&( etat == 3)) || ((val=='g' && val2=='v') &&( etat == 3)) || ((val=='G' && val2=='v') && ( etat == 3)) || ((val=='g' && val2=='V') && (etat == 3)))
+               {   
+                     grandevitessearriere (255,255);
+                     Serial1.println("grande vitesse arriere");
+                     loop();
+               }
+        
+             ///PETITE VITESSE AVANCER
+         
+                  while(((val == 'P' && val2 == 'V') && ( etat == 2) ) || ((val == 'p' && val2 == 'v') && ( etat == 2)) || ((val=='P' && val2 == 'v') && (etat == 2)) || ((val=='p' && val2=='V') && (etat == 2)))
+               {
+                     petitevitesse (100,100);
+                     Serial1.println("petite vitesse avancer");  
+                     loop();
+               }
+               
+               
+             ///GRANDE VITESSE AVANCER 
+                  while(((val=='G' && val2  =='V') && (etat == 2)) || ((val == 'g' && val2 =='v') && (etat == 2)) || ((val=='G' && val2=='v') && ( etat == 2)) || ((val=='g' && val2=='V') && ( etat == 2)))
+               {
+                 grandevitesse (255,255);
+                 Serial1.println("grande vitesse avancer");
+                
+                  loop();
+               }
+           
+              // AVANCER
+              
+                 while(val=='A' || val=='a')
+               {
+                 advance (100,100); // avant 
+                 etat=2;
+                 Serial1.println("avancer");
+                 loop();
+               }
+               
+              // RECULER
+              
+                 while(val=='R' || val=='r')
+              { 
+                etat=3;
+                reculer (100,100);
+                Serial1.println("reculer");
+                loop();
+              } 
+              
+               // TOURNER A GAUCHE
+               
+                while(val=='G' || val=='g')
+               {
+                 Serial1.println("gauche ");
+                 tournergauche (100,100);
+                 loop();
+               }
+             
+              //TOURNER A DROITE
+              
+               while(val=='D' ||  val=='d')
+             {
+                 tournerdroite (100,100);
+                 Serial1.println("droite");
+                 loop();
+             }
+              //PRENDRE LA TEMPERATURE
+              
+               while(val=='T' || val=='t')
+             {
+                temperature();
+                loop();
+            
+             }
+             
+              //servomoteur
+               while((val=='s' &&  val2=='e')||(val=='S' &&  val2=='E')||(val=='S' &&  val2=='E' && val3=='R' &&  val4=='V'&& val5=='O') || (val=='s' &&  val2=='e' && val3=='r' &&  val4=='v'&& val5=='o' ) || (val=='S' &&  val2=='e' && val3=='r' &&  val4=='v'&& val5=='o'))
+             {    etat=4;  
+                 
+                  Serial1.println("servo !");
+                  loop();
+             }
+               while((etat==4))
+             {     
+            
+                    Serial1.println();
+                    
+                   servo(val,val2,val3);
+                  
+                  loop();
+             }
+              // STOP
+              
+               while(val=='S' || val=='s')
+             { 
+                 stop();
+                 Serial1.println("STOP !");
+                 loop();
+             }
+             
+              
+        }
+   }
+}
+             
+             
+             
+             //    TOUTES LES FFONCTIONS
+             
+               //Stop
+              void stop() 
+              {
+              digitalWrite(vitesse1,LOW);
+              digitalWrite(vitesse2,LOW);
+              }
+              
+              void advance(char a,char b) // En avant
+              {
+              analogWrite (vitesse1,a); 
+              digitalWrite( sens1,HIGH);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,HIGH);
+              }
+              // RECULER
+              void reculer (char a,char b) // En arrière
+              {
+              analogWrite (vitesse1,a);
+              digitalWrite(sens1,LOW);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,LOW);
+              }
+              
+              void tournergauche (char a,char b)
+              // Tourner à gauche
+              {
+                servodirection.write(90);
+              delay(25);
+              analogWrite (vitesse1,a);
+              digitalWrite(sens1,LOW);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,HIGH);
+              }
+              void tournerdroite (char a,char b)
+              // Tourner à droite
+              {servodirection.write(90);
+              delay(25);
+              analogWrite (vitesse1,a);
+              digitalWrite(sens1,HIGH);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,LOW);
+              }
+              void grandevitesse(char a,char b) 
+              // grande vitesse avancer
+              {
+              analogWrite (vitesse1,a); 
+              digitalWrite(sens1,HIGH);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,HIGH);
+              }
+              void petitevitesse(char a,char b) // En avant
+              {
+              analogWrite (vitesse1,a); 
+              digitalWrite(sens1,HIGH);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,HIGH);
+              }
+              void petitevitessearriere(char a,char b) // En avant
+              {
+              analogWrite (vitesse1,a); 
+              digitalWrite(sens1,LOW);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,LOW);
+              }
+              void grandevitessearriere(char a,char b) 
+              {
+              analogWrite (vitesse1,a); 
+              digitalWrite(sens1,LOW);
+              analogWrite (vitesse2,b);
+              digitalWrite(sens2,LOW);
+              }
+
+              void temperature()
+            {  digitalWrite(sens2,LOW);
+               digitalWrite(sens1,LOW); 
+               digitalWrite(vitesse1,LOW);
+               digitalWrite(vitesse2,LOW);
+               delay(500);
+              int valeurCapteur = analogRead(sensorValue);
+            
+                // conversion voltage
+                float volt = (valeurCapteur/1024.0) * 5;
+            
+                // conversion température
+                Serial1.println("La temperature est de: ");
+                Serial1.print("degres C: "); 
+              float temperature = valeurCapteur*5*100/1024;
+              temperature =(volt - .5) * 100;
+              Serial1.println(temperature);
+              delay(700);
+              
+            }
+
+            // SERVO
+           void servo(char val,char val2,char val3)
+                        
+                      { 
+                           if((val != 10) && (val2 !=10) &&( val3 !=10))
+            {
+                  val2=val2-48;
+                  val3=val3-48;
+                  val=val-48;
+                int valeur = val*100+ val2*10+val3;
+             if(valeur<=175 && valeur>=0)
+              {
+           
+                Serial1.println(valeur); 
+                servodirection.write(valeur);         
+                delay(15); 
+              }
+             else{Serial1.println("valeur trop importante ou faible ! MAX = 170 MIN= 0");
+             delay(500);
+               loop();
+             } 
+          
+            }
+           else if((val != 10 ) && ( val2 != 10))
+           {
+             val=val-48;
+             val2=val2-48;
+             int valeur = val*10 + val2;
+              
+             Serial1.println(valeur);
+             servodirection.write(valeur);
+             
+           }
+            else if(val != 10)
+           {
+             val=val-48;
+             int valeur = val;
+             Serial1.println(valeur); 
+             servodirection.write(valeur); 
+           }
+            else
+            {Serial1.println("entrer une valeur de 0 a 170 !");
+            delay(500);
+            }
+                      }
+          
+         
+         
+   /******************************************************************
+   
+   
+   FIN PROGRAMME
+   
+   
+   ***************************************************************/
