@@ -1,0 +1,62 @@
+// mot de passe arduino serial
+#define led 13
+void setup()
+{
+ Serial.begin(9600);
+ pinMode(led, OUTPUT);
+ Serial.println("entrez votre mot de passe :");
+ delay(50);
+ 
+}
+
+void loop()
+{
+          int val[] ={0,0,0,0};
+          delay(10);
+          digitalWrite(led,LOW);
+          
+ if (Serial.available() >0  ) 
+ {
+     
+     val[0] = Serial.read() ;
+     val[1] = Serial.read() ;
+     val[2] = Serial.read() ;
+     val[3] = Serial.read() ;
+     val[4] = Serial.read() ;
+   // ici vous pouvez changer votre mot de passe
+     int mdp1= '6' ;
+     int mdp2= '9';
+     int mdp3= '4';
+     int mdp4= '5';
+     if(val[0]==mdp1 && val[1]== mdp2 && val[2]== mdp3 && val[3]== mdp4 && val[4] == 10 )
+     {  digitalWrite(led,HIGH);
+     
+       Serial.println("Bienvenue !");
+       delay(5000);
+       setup();
+       
+     }
+     else if(val[0] == 10 || val[1] == 10 || val[2] == 10 || val[3] == 10 )
+     { Serial.println("il y a pas assez de chiffres !");
+       delay(2000);
+       setup();
+     }
+     else if(val[4] != 10)
+     { Serial.println("il n y a que 4 chiffres !");
+       delay(2000);
+       setup();
+     }
+     
+     else{
+            Serial.println("CODE FAUX !");
+            delay(2000);
+            setup();
+         }
+ }
+      
+}
+void serialEvent() 
+{
+   while(Serial.read() != -1);  
+}
+
