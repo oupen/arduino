@@ -1,0 +1,18 @@
+// programme arduino alphabet sur le moniteur série
+
+char alphabet[] = {'A','B','C','D','E','F','G','H','I','J','K','L','M','N','O','P','Q','R','S','T','U','V','X','W','Y','Z'};
+int val =0;
+void setup()
+{Serial.begin(9600);
+}
+void loop()
+{ for(val=0;val<26;val++)
+{
+  
+char lettre = alphabet[val];
+  Serial.println(lettre);
+
+delay(250);
+}
+delay(5000);
+}
